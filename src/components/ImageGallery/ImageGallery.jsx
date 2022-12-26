@@ -10,13 +10,25 @@ const KEY = '31271672-bfb0d2ac7c61ea0216be79fb4';
 export class ImageGallery extends Component {
   state = {
     responseData: null,
+    page: 1,
   };
 
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
+      this.setState({ page: 1 });
       try {
         const responceQuery = await fetch(
-          `https://pixabay.com/api/?key=${KEY}&q=${this.props.query}&page=1&image_type=photo&orientation=horizontal&page=1&per_page=12`
+          `https://pixabay.com/api/?key=${KEY}&q=${this.props.query}&page=1&image_type=photo&orientation=horizontal&page=${this.state.page}&per_page=12`
+        );
+        const data = await responceQuery.json();
+        this.setState({ responseData: data.hits });
+      } catch (error) {
+        toast.warn('Something weird happend. Please try your request again');
+      }
+    } else if (prevState.page !== this.state.page) {
+      try {
+        const responceQuery = await fetch(
+          `https://pixabay.com/api/?key=${KEY}&q=${this.props.query}&page=1&image_type=photo&orientation=horizontal&page=${this.state.page}&per_page=12`
         );
         const data = await responceQuery.json();
         this.setState({ responseData: data.hits });
@@ -26,6 +38,10 @@ export class ImageGallery extends Component {
     }
   }
 
+  handleLoad = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
+
   render() {
     const { responseData } = this.state;
     return (
@@ -33,7 +49,7 @@ export class ImageGallery extends Component {
         <Gallery>
           {responseData && <ImageGalleryItem responseData={responseData} />}
         </Gallery>
-        {responseData && <LoadButton />}
+        {responseData && <LoadButton onBtnClick={this.handleLoad} />}
       </>
     );
   }
