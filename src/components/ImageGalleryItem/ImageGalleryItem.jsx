@@ -20,5 +20,3 @@ export class ImageGalleryItem extends Component {
     ));
   }
 }
-
-// evt => getImageData(evt.target.dataset.source, evt.target.alt);

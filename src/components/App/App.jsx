@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { InfinitySpin } from 'react-loader-spinner';
 import { Searchbar } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery';
+import { fetchImages } from 'components/Api/imageApi';
 import { LoadButton } from 'components/Button/Button';
 import { Modal } from 'components/Modal/Modal';
 import { Box } from './App.styled';
+import 'react-toastify/dist/ReactToastify.css';
 
-const KEY = '31271672-bfb0d2ac7c61ea0216be79fb4';
+// const KEY = '31271672-bfb0d2ac7c61ea0216be79fb4';
 
 export class App extends Component {
   state = {
@@ -26,10 +27,7 @@ export class App extends Component {
     if (prevState.query !== this.state.query) {
       this.setState({ responseData: [], page: 1, loading: true });
       try {
-        const responceQuery = await fetch(
-          `https://pixabay.com/api/?key=${KEY}&q=${this.state.query}&page=1&image_type=photo&orientation=horizontal&page=${this.state.page}&per_page=12`
-        );
-        const data = await responceQuery.json();
+        const data = await fetchImages(this.state.query, this.state.page);
         this.setState({ responseData: data.hits });
       } catch (error) {
         toast.warn('Something weird happend. Please try your request again');
@@ -39,10 +37,7 @@ export class App extends Component {
     } else if (prevState.page !== this.state.page) {
       this.setState({ loading: true });
       try {
-        const responceQuery = await fetch(
-          `https://pixabay.com/api/?key=${KEY}&q=${this.state.query}&page=1&image_type=photo&orientation=horizontal&page=${this.state.page}&per_page=12`
-        );
-        const data = await responceQuery.json();
+        const data = await fetchImages(this.state.query, this.state.page);
         this.setState(prevState => ({
           responseData: [...prevState.responseData, ...data.hits],
         }));
@@ -73,11 +68,9 @@ export class App extends Component {
     this.setState({ isModalOpen: false });
   };
 
-  getImageUrl = (url, tags) => {
+  getImageData = (url, tags) => {
     this.setState({ url, tags });
     this.openModal();
-    console.log(url);
-    console.log(tags);
   };
 
   render() {
@@ -89,11 +82,10 @@ export class App extends Component {
         {responseData.length > 0 && (
           <ImageGallery
             responseData={responseData}
-            getImageData={this.getImageUrl}
+            getImageData={this.getImageData}
           />
         )}
         {responseData.length > 0 && <LoadButton onBtnClick={this.handleLoad} />}
-        {/* <button onClick={this.openModal}>modal</button> */}
         {isModalOpen && (
           <Modal onClose={this.closeModal}>
             {<img src={url} alt={tags} />}
