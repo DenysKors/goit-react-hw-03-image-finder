@@ -6,6 +6,7 @@ import { InfinitySpin } from 'react-loader-spinner';
 import { Searchbar } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery';
 import { LoadButton } from 'components/Button/Button';
+import { Modal } from 'components/Modal/Modal';
 import { Box } from './App.styled';
 
 const KEY = '31271672-bfb0d2ac7c61ea0216be79fb4';
@@ -16,6 +17,7 @@ export class App extends Component {
     responseData: [],
     page: 1,
     loading: false,
+    isModalOpen: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -42,6 +44,7 @@ export class App extends Component {
         this.setState(prevState => ({
           responseData: [...prevState.responseData, ...data.hits],
         }));
+        console.log(data);
       } catch (error) {
         toast.warn('Something weird happend. Please try your request again');
       } finally {
@@ -60,8 +63,16 @@ export class App extends Component {
     this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
+  openModal = () => {
+    this.setState({ isModalOpen: true });
+  };
+
+  closeModal = () => {
+    this.setState({ isModalOpen: false });
+  };
+
   render() {
-    const { responseData, loading } = this.state;
+    const { responseData, loading, isModalOpen } = this.state;
     return (
       <Box>
         <Searchbar onSubmit={this.searchQuery} />
@@ -70,6 +81,13 @@ export class App extends Component {
           <ImageGallery responseData={responseData} />
         )}
         {responseData.length > 0 && <LoadButton onBtnClick={this.handleLoad} />}
+        <button onClick={this.openModal}>modal</button>
+        {isModalOpen && (
+          <Modal onClose={this.closeModal}>
+            <p>Hello</p>
+            {/* <img src="" alt="" /> */}
+          </Modal>
+        )}
         <ToastContainer position="top-left" theme="dark" autoClose={3000} />
       </Box>
     );
