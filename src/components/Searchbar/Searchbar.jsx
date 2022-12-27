@@ -13,7 +13,7 @@ export class Searchbar extends Component {
     this.setState({ query: value });
   };
 
-  onFormSubmit = evt => {
+  formSubmit = evt => {
     evt.preventDefault();
     if (this.state.query.trim() === '') {
       return toast.info('Enter request to search');
@@ -29,7 +29,7 @@ export class Searchbar extends Component {
   render() {
     return (
       <Head>
-        <Form onSubmit={this.onFormSubmit}>
+        <Form onSubmit={this.formSubmit}>
           <Button type="submit">
             <Search>Search</Search>
           </Button>
