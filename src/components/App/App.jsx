@@ -18,6 +18,8 @@ export class App extends Component {
     page: 1,
     loading: false,
     isModalOpen: false,
+    url: '',
+    tags: '',
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -71,21 +73,30 @@ export class App extends Component {
     this.setState({ isModalOpen: false });
   };
 
+  getImageUrl = (url, tags) => {
+    this.setState({ url, tags });
+    this.openModal();
+    console.log(url);
+    console.log(tags);
+  };
+
   render() {
-    const { responseData, loading, isModalOpen } = this.state;
+    const { responseData, loading, isModalOpen, url, tags } = this.state;
     return (
       <Box>
         <Searchbar onSubmit={this.searchQuery} />
         {loading && <InfinitySpin />}
         {responseData.length > 0 && (
-          <ImageGallery responseData={responseData} />
+          <ImageGallery
+            responseData={responseData}
+            getImageData={this.getImageUrl}
+          />
         )}
         {responseData.length > 0 && <LoadButton onBtnClick={this.handleLoad} />}
-        <button onClick={this.openModal}>modal</button>
+        {/* <button onClick={this.openModal}>modal</button> */}
         {isModalOpen && (
           <Modal onClose={this.closeModal}>
-            <p>Hello</p>
-            {/* <img src="" alt="" /> */}
+            {<img src={url} alt={tags} />}
           </Modal>
         )}
         <ToastContainer position="top-left" theme="dark" autoClose={3000} />
