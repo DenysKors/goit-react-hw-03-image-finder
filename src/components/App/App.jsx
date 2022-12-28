@@ -14,41 +14,53 @@ export class App extends Component {
   state = {
     query: '',
     responseData: [],
-    page: 1,
+    startPage: 1,
+    loadPage: 1,
     loading: false,
     isModalOpen: false,
     url: '',
     tags: '',
   };
 
-  async componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevState.query !== this.state.query) {
-      this.setState({ responseData: [], page: 1, loading: true });
-      try {
-        const data = await fetchImages(this.state.query, this.state.page);
-        this.setState({ responseData: data.hits });
-      } catch (error) {
-        toast.warn('Something weird happend. Please try your request again');
-      } finally {
-        this.setState({ loading: false });
-      }
+      this.getImagesList();
     } else if (
-      prevState.page !== this.state.page &&
+      prevState.loadPage !== this.state.loadPage &&
       prevState.query === this.state.query
     ) {
-      this.setState({ loading: true });
-      try {
-        const data = await fetchImages(this.state.query, this.state.page);
-        this.setState(prevState => ({
-          responseData: [...prevState.responseData, ...data.hits],
-        }));
-      } catch (error) {
-        toast.warn('Something weird happend. Please try your request again');
-      } finally {
-        this.setState({ loading: false });
-      }
+      this.addImagesList();
     }
   }
+
+  getImagesList = async () => {
+    try {
+      this.setState({ responseData: [], loading: true });
+      const data = await fetchImages(this.state.query, this.state.startPage);
+      if (data.hits.length === 0) {
+        toast.info('Sorry, we cant find anything');
+      }
+      this.setState({ responseData: data.hits });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.setState({ loading: false });
+    }
+  };
+
+  addImagesList = async () => {
+    try {
+      this.setState({ loading: true });
+      const data = await fetchImages(this.state.query, this.state.loadPage);
+      this.setState(prevState => ({
+        responseData: [...prevState.responseData, ...data.hits],
+      }));
+    } catch (error) {
+      toast.warn('Something weird happend. Please try your request again');
+    } finally {
+      this.setState({ loading: false });
+    }
+  };
 
   searchQuery = query => {
     const normalizedQuery = query.toLowerCase().trim();
@@ -56,7 +68,7 @@ export class App extends Component {
   };
 
   handleLoad = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
+    this.setState(prevState => ({ loadPage: prevState.loadPage + 1 }));
   };
 
   openModal = () => {
@@ -77,15 +89,15 @@ export class App extends Component {
     return (
       <Box>
         <Searchbar onSubmit={this.searchQuery} />
-        {loading && (
-          <Puff
-            wrapperStyle={{ display: 'inline-block', textAlign: 'center' }}
-          />
-        )}
         {responseData.length > 0 && (
           <ImageGallery
             responseData={responseData}
             getImageData={this.getImageData}
+          />
+        )}
+        {loading && (
+          <Puff
+            wrapperStyle={{ display: 'inline-block', textAlign: 'center' }}
           />
         )}
         {responseData.length > 0 && <LoadButton onBtnClick={this.handleLoad} />}
