@@ -29,26 +29,28 @@ export class App extends Component {
       try {
         const data = await fetchImages(this.state.query, this.state.page);
         this.setState({ responseData: data.hits });
+        console.log('response', data.hits);
       } catch (error) {
         toast.warn('Something weird happend. Please try your request again');
       } finally {
         this.setState({ loading: false });
       }
-    } else if (prevState.page !== this.state.page) {
+    } else if (
+      prevState.page !== this.state.page &&
+      prevState.query === this.state.query
+    ) {
       this.setState({ loading: true });
       try {
         const data = await fetchImages(this.state.query, this.state.page);
         this.setState(prevState => ({
           responseData: [...prevState.responseData, ...data.hits],
         }));
-        console.log(data);
       } catch (error) {
         toast.warn('Something weird happend. Please try your request again');
       } finally {
         this.setState({ loading: false });
       }
     }
-    console.log(this.state.responseData);
   }
 
   searchQuery = query => {
