@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { ReactComponent as SearchIcon } from 'images/search.svg';
 import { toast } from 'react-toastify';
 import { Head, Form, Button, Search, Input } from './Searchbar.styled';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,6 +33,7 @@ export class Searchbar extends Component {
       <Head>
         <Form onSubmit={this.formSubmit}>
           <Button type="submit">
+            <SearchIcon />
             <Search>Search</Search>
           </Button>
 
