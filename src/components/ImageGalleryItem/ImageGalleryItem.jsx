@@ -6,7 +6,6 @@ import { GalleryImage } from './ImageGalleryItem.styled';
 export class ImageGalleryItem extends Component {
   render() {
     const { responseData, getImageData } = this.props;
-    console.log(responseData);
 
     return responseData.map(({ id, webformatURL, largeImageURL, tags }) => (
       <GalleryItem key={id}>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
-import { InfinitySpin } from 'react-loader-spinner';
+import { Puff } from 'react-loader-spinner';
 import { Searchbar } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery';
 import { fetchImages } from 'components/Api/imageApi';
@@ -9,8 +9,6 @@ import { LoadButton } from 'components/Button/Button';
 import { Modal } from 'components/Modal/Modal';
 import { Box } from './App.styled';
 import 'react-toastify/dist/ReactToastify.css';
-
-// const KEY = '31271672-bfb0d2ac7c61ea0216be79fb4';
 
 export class App extends Component {
   state = {
@@ -29,7 +27,6 @@ export class App extends Component {
       try {
         const data = await fetchImages(this.state.query, this.state.page);
         this.setState({ responseData: data.hits });
-        console.log('response', data.hits);
       } catch (error) {
         toast.warn('Something weird happend. Please try your request again');
       } finally {
@@ -80,7 +77,11 @@ export class App extends Component {
     return (
       <Box>
         <Searchbar onSubmit={this.searchQuery} />
-        {loading && <InfinitySpin />}
+        {loading && (
+          <Puff
+            wrapperStyle={{ display: 'inline-block', textAlign: 'center' }}
+          />
+        )}
         {responseData.length > 0 && (
           <ImageGallery
             responseData={responseData}
