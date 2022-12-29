@@ -35,7 +35,7 @@ export class App extends Component {
 
   getImagesList = async () => {
     try {
-      this.setState({ responseData: [], loading: true });
+      this.setState({ responseData: [], loadPage: 1, loading: true });
       const data = await fetchImages(this.state.query, this.state.startPage);
       if (data.hits.length === 0) {
         toast.info('Sorry, we cant find anything');
