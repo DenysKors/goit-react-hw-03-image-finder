@@ -14,8 +14,7 @@ export class App extends Component {
   state = {
     query: '',
     responseData: [],
-    startPage: 1,
-    loadPage: 1,
+    page: 1,
     loading: false,
     isModalOpen: false,
     url: '',
@@ -26,7 +25,7 @@ export class App extends Component {
     if (prevState.query !== this.state.query) {
       this.getImagesList();
     } else if (
-      prevState.loadPage !== this.state.loadPage &&
+      prevState.page !== this.state.page &&
       prevState.query === this.state.query
     ) {
       this.addImagesList();
@@ -35,8 +34,7 @@ export class App extends Component {
 
   getImagesList = async () => {
     try {
-      this.setState({ responseData: [], loadPage: 1, loading: true });
-      const data = await fetchImages(this.state.query, this.state.startPage);
+      const data = await fetchImages(this.state.query, this.state.page);
       if (data.hits.length === 0) {
         toast.info('Sorry, we cant find anything');
       }
@@ -51,9 +49,9 @@ export class App extends Component {
   addImagesList = async () => {
     try {
       this.setState({ loading: true });
-      const data = await fetchImages(this.state.query, this.state.loadPage);
+      const data = await fetchImages(this.state.query, this.state.page);
       this.setState(prevState => ({
-        responseData: [...prevState.responseData, ...data.hits],
+        responseData: [...this.state.responseData, ...data.hits],
       }));
     } catch (error) {
       toast.warn('Something weird happend. Please try your request again');
@@ -64,11 +62,16 @@ export class App extends Component {
 
   searchQuery = query => {
     const normalizedQuery = query.toLowerCase().trim();
-    this.setState({ query: normalizedQuery });
+    this.setState({
+      query: normalizedQuery,
+      responseData: [],
+      page: 1,
+      loading: true,
+    });
   };
 
   handleLoad = () => {
-    this.setState(prevState => ({ loadPage: prevState.loadPage + 1 }));
+    this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   openModal = () => {
